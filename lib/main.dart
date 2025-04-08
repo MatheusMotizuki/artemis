@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/screens/ar_screen.dart';
 import 'screens/signup.dart';
 import 'screens/register.dart';
 import 'screens/login.dart';
@@ -52,6 +53,16 @@ class ArtemisLandingPage extends StatelessWidget {
                 );
               },
               text: 'Register',
+            ),
+            ArtemisButton(
+              backgroundColor: const Color(0xFFAB2628),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ARScreen()),
+                );
+              },
+              text: 'AR PAGE',
             ),
             // Navigate to LoginPage on button press
             ElevatedButton(
