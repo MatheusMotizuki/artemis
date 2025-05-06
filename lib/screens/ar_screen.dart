@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:arcore_flutter_plugin/arcore_flutter_plugin.dart';
-import 'package:flutter/rendering.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
 import 'package:uuid/uuid.dart';
 import 'package:flutter_app/models/post.dart';
@@ -169,6 +168,7 @@ class _ARScreenState extends State<ARScreen> {
     // Create a new Post object
     final post = Post(
       id: uuid.v4(),
+      userId: 1,
       text: _textController.text,
       position: newPostPosition!,
     );

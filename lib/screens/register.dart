@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
+import 'login.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -13,6 +15,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final ApiService _apiService = ApiService();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -21,6 +25,41 @@ class _RegisterPageState extends State<RegisterPage> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _register() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true; // Inicia o carregamento
+      });
+
+      final result = await _apiService.registerUser(
+        _usernameController.text,
+        _emailController.text,
+        _passwordController.text,
+      );
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (!mounted) return; 
+
+      if (result['success']) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Registration successful! Please login.')),
+        );
+        // Navega para a tela de login após registro bem-sucedido
+        Navigator.pushReplacement( // Use pushReplacement para não poder voltar para Register
+          context,
+          MaterialPageRoute(builder: (context) => const Login()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Registration failed: ${result['message']}')),
+        );
+      }
+    }
   }
 
   @override
@@ -116,25 +155,24 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    // TODO: Implement registration logic
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Processing registration...')),
-                    );
-                  }
-                },
+                onPressed: _isLoading ? null : _register, // Desabilita botão durante o carregamento
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 15),
                 ),
-                child: const Text(
-                  'Register',
-                  style: TextStyle(fontSize: 16),
-                ),
+                child: _isLoading
+                    ? const SizedBox( // Mostra indicador de progresso
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      )
+                    : const Text(
+                        'Register',
+                        style: TextStyle(fontSize: 16),
+                      ),
               ),
               const SizedBox(height: 16),
               TextButton(
-                onPressed: () {
+                onPressed: _isLoading ? null : () { // Desabilita durante o carregamento
                   Navigator.pop(context);
                 },
                 child: const Text('Already have an account? Login'),
